@@ -1,0 +1,84 @@
+<div id="st-server-shutdown-settings">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b data-i18n="Server Shutdown">Server Shutdown</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <div id="st-server-shutdown-setup-center">
+                <!-- State: Plugin Missing -->
+                <div id="st-server-shutdown-state-missing" class="setup-center-info hidden">
+                    <p class="text_warning"><i class="fa-solid fa-circle-info"></i> <b>Setup Required</b></p>
+                    <p>The server plugin must be installed for the shutdown button to work.</p>
+                    <p><small>Run this from your SillyTavern installation directory:</small></p>
+                    <div class="flex-container gap1">
+                        <code class="st-server-shutdown-command flex1"></code>
+                        <button class="st-server-shutdown-copy-btn menu_button small_button" title="Copy"><i
+                                class="fa-solid fa-copy"></i></button>
+                    </div>
+                    <p><small>Restart the server after running the command.</small></p>
+                </div>
+
+                <!-- State: Ready -->
+                <div id="st-server-shutdown-state-ready" class="setup-center-info hidden">
+                    <p class="text_success"><i class="fa-solid fa-circle-check"></i> <b>Server Plugin Active</b></p>
+                    <p>The server-side component is installed and ready.</p>
+                </div>
+
+                <!-- State: Update Required -->
+                <div id="st-server-shutdown-state-update" class="setup-center-info hidden">
+                    <p class="text_warning"><i class="fa-solid fa-cloud-arrow-up"></i> <b>Update Required</b></p>
+                    <p>Your server plugin is out of date. Please run the update command below:</p>
+                    <div class="flex-container gap1">
+                        <code class="st-server-shutdown-command flex1"></code>
+                        <button class="st-server-shutdown-copy-btn menu_button small_button" title="Copy"><i
+                                class="fa-solid fa-copy"></i></button>
+                    </div>
+                    <p><small>Restart the server after running the command.</small></p>
+                </div>
+
+                <!-- State: Offline -->
+                <div id="st-server-shutdown-state-offline" class="setup-center-info hidden">
+                    <p class="text_error"><i class="fa-solid fa-plug-circle-xmark"></i> <b>Server Offline</b></p>
+                    <p>The server has been shut down. What have you done?? T.T</p>
+                </div>
+            </div>
+
+
+            <div id="st-server-shutdown-main-settings" class="hidden">
+                <div class="setup-item">
+                    <div class="warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Warning: This will terminate the server process immediately.</span>
+                    </div>
+                </div>
+
+                <div class="setup-item">
+                    <div id="st-server-shutdown-controls">
+                        <button id="st-server-shutdown-btn"
+                            class="menu_button menu_button_recolored custom-shutdown-btn">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span data-i18n="Shutdown Server">SERVER OFF</span>
+                        </button>
+                    </div>
+                    <div id="st-server-shutdown-status" class="hidden">
+                        <div class="shutdown-loader">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                            <span>Shutting down... Connection will be lost.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-item">
+                    <small><b data-i18n="Log Level">Log Level</b></small>
+                    <select id="st-server-shutdown-log-level" class="text_pole">
+                        <option value="0">None</option>
+                        <option value="1">Error</option>
+                        <option value="2">Warn</option>
+                        <option value="3">Info</option>
+                        <option value="4">Debug</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
