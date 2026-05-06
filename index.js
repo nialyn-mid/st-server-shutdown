@@ -22,9 +22,11 @@ const STATE = {
     MISSING: 'missing',
     UPDATE: 'update',
     OFFLINE: 'offline',
+    WAITING: 'waiting',
 };
 
 const REQUIRED_SERVER_VERSION = '1.0.0';
+
 
 const defaultSettings = {
     logLevel: LOG_LEVELS.WARN,
@@ -58,14 +60,22 @@ function getInstallCommand() {
  * Checks if the server-side plugin is installed and active.
  */
 async function checkPluginStatus() {
-    if (intentionalShutdown) {
-        return STATE.OFFLINE;
-    }
+    const wasIntentional = sessionStorage.getItem(`${MODULE_NAME}-intentional-shutdown`) === 'true';
 
     try {
         const response = await fetch('/api/plugins/st-server-shutdown/status');
         if (response.ok) {
+            // Server is online, check if we were waiting for it to shut down
+            if (wasIntentional || intentionalShutdown) {
+                return STATE.WAITING;
+            }
+
+            // Otherwise, clear the intentional shutdown flag
+            sessionStorage.removeItem(`${MODULE_NAME}-intentional-shutdown`);
+            intentionalShutdown = false;
+
             const data = await response.json();
+
             installedServerVersion = data.version || '0.0.0';
 
             if (installedServerVersion < REQUIRED_SERVER_VERSION) {
@@ -76,9 +86,14 @@ async function checkPluginStatus() {
             return STATE.READY;
         }
     } catch (e) {
-        // Network error or missing plugin
-        logger.debug('Failed to connect to shutdown plugin:', e.message);
+        // Network error - verify if it was an intentional shutdown
+        if (wasIntentional || intentionalShutdown) {
+            logger.debug('Server is offline (verified by network error after intentional shutdown)');
+            return STATE.OFFLINE;
+        }
+        logger.debug('Failed to connect to shutdown plugin (not intentional):', e.message);
     }
+
 
     return STATE.MISSING;
 }
@@ -93,7 +108,7 @@ async function updateSetupUI() {
     const container = document.getElementById('st-server-shutdown-settings');
     if (!container) return;
 
-    const states = ['ready', 'missing', 'update', 'offline'];
+    const states = ['ready', 'missing', 'update', 'offline', 'waiting'];
     states.forEach(s => {
         const el = document.getElementById(`st-server-shutdown-state-${s}`);
         if (el) el.classList.add('hidden');
@@ -118,7 +133,13 @@ async function updateSetupUI() {
     cmdEls.forEach(el => {
         el.textContent = cmdText;
     });
+
+    // If we are waiting, poll again soon
+    if (status === STATE.WAITING) {
+        setTimeout(updateSetupUI, 1000);
+    }
 }
+
 
 
 /**
@@ -136,13 +157,15 @@ async function handleShutdown() {
 
     try {
         const response = await fetch('/api/plugins/st-server-shutdown/shutdown');
-        
+
         if (response.ok) {
             intentionalShutdown = true;
+            sessionStorage.setItem(`${MODULE_NAME}-intentional-shutdown`, 'true');
             toastr.success('Shutdown command sent successfully.');
             logger.info('Shutdown command acknowledged by server.');
             updateSetupUI();
         } else {
+
             throw new Error('Server returned an error.');
         }
     } catch (e) {
@@ -176,7 +199,7 @@ function saveSettings() {
  */
 function initSettingsUI(html) {
     const $settings = $(html);
-    
+
     // Bind "Copy" button
     $settings.on('click', '.st-server-shutdown-copy-btn', function () {
         const cmd = getInstallCommand();

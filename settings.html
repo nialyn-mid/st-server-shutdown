@@ -42,6 +42,13 @@
                     <p class="text_error"><i class="fa-solid fa-plug-circle-xmark"></i> <b>Server Offline</b></p>
                     <p>The server has been shut down. What have you done?? T.T</p>
                 </div>
+
+                <!-- State: Waiting -->
+                <div id="st-server-shutdown-state-waiting" class="setup-center-info hidden">
+                    <p class="text_info"><i class="fa-solid fa-circle-notch fa-spin"></i> <b>Waiting for shutdown...</b>
+                    </p>
+                    <p>The shutdown command has been sent. The server process should terminate shortly.</p>
+                </div>
             </div>
 
 
@@ -49,7 +56,8 @@
                 <div class="setup-item">
                     <div class="warning-box">
                         <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>Warning: This will terminate the server process immediately.</span>
+                        <span>Warning: This will terminate the server process immediately. Any unsaved
+                            actions such as in-progress generation will be unrecoverable.</span>
                     </div>
                 </div>
 
